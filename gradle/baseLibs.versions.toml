@@ -11,6 +11,7 @@ lifecycle_compose_version = '2.6.0-alpha03'
 compose_state_events_version = '1.2.3'
 constraint_layout_version = '1.0.1'
 glide_compose_version = '1.0.0-alpha.1'
+room_version = '2.5.0'
 
 jvm_target = '11'
 compile_sdk = '33'
@@ -47,7 +48,10 @@ androidx-constraintlayout = { group = 'androidx.constraintlayout', name = 'const
 
 glide-compose = { group = 'com.github.bumptech.glide', name = 'compose', version.ref = 'glide_compose_version' }
 
-timber= { group = 'com.jakewharton.timber', name = 'timber', version.ref = 'timber_version' }
+timber = { group = 'com.jakewharton.timber', name = 'timber', version.ref = 'timber_version' }
+
+room = { group = 'androidx.room', name = 'room-runtime', version.ref = 'room_version' }
+room_compiler = { group = 'androidx.room', name='room-compiler', version.ref = 'room_version' }
 
 junit = 'junit:junit:4.+'
 androidx-junit = 'androidx.test.ext:junit:1.1.3'

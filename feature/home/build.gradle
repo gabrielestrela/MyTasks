@@ -8,6 +8,8 @@ dependencies {
     implementation (project(':core'))
     implementation (project(':designsystem'))
 
+    implementation (baseLibs.room)
+    annotationProcessor (baseLibs.room.compiler)
     implementation (baseLibs.bundles.koincompose)
     implementation (baseLibs.androidx.constraintlayout)
     implementation (baseLibs.glide.compose)
