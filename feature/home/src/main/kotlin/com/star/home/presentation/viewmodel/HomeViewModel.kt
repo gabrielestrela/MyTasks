@@ -1,17 +1,18 @@
 package com.star.home.presentation.viewmodel
 
-import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import com.star.home.domain.model.ListOrderTypes
+import com.star.home.domain.usecase.SaveHomeStateUseCase
 import com.star.home.presentation.event.HomeEvents
 import com.star.home.presentation.viewstate.*
-import de.palm.composestateevents.consumed
 import de.palm.composestateevents.triggered
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    val saveHomeState: SaveHomeStateUseCase
+) : ViewModel() {
     private val _state: MutableStateFlow<HomeViewState> = MutableStateFlow(HomeViewState())
     val state = _state.asStateFlow()
 
@@ -32,42 +33,47 @@ class HomeViewModel : ViewModel() {
         _event.update { it.copy(showCreateListDialog = triggered) }
     }
 
-    fun onAddListClickComplete() {
-        _event.update { it.copy(showCreateListDialog = consumed) }
-    }
-
     fun setDialogVisibility(shouldDisplay: Boolean) {
-        _state.update {
-            it.copy(dialogInfo = it.dialogInfo.copy(shouldDisplayDialog = shouldDisplay)) }
+        savableProcedure {
+            _state.update {
+                it.copy(dialogInfo = it.dialogInfo.copy(shouldDisplayDialog = shouldDisplay))
+            }
+        }
     }
 
     fun updateSelectedColorInfo(index: Int) {
-        _state.update {
-            it.copy(
-                dialogInfo = it.dialogInfo.copy(
-                    colorInfoList = updateSelectedColor(it.dialogInfo.colorInfoList, index)
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    dialogInfo = it.dialogInfo.copy(
+                        colorInfoList = updateSelectedColor(it.dialogInfo.colorInfoList, index)
+                    )
                 )
-            )
+            }
         }
     }
 
     fun resetSelectedColor() {
-        _state.update {
-            it.copy(
-                dialogInfo = it.dialogInfo.copy(
-                    colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    dialogInfo = it.dialogInfo.copy(
+                        colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
+                    )
                 )
-            )
+            }
         }
     }
 
     fun resetSelectedIconList() {
-        _state.update {
-            it.copy(
-                dialogInfo = it.dialogInfo.copy(
-                    iconInfoList = resetIconInfoList(it.dialogInfo.iconInfoList)
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    dialogInfo = it.dialogInfo.copy(
+                        iconInfoList = resetIconInfoList(it.dialogInfo.iconInfoList)
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -96,16 +102,20 @@ class HomeViewModel : ViewModel() {
     }
 
     fun updateSelectedIconInfo(index: Int) {
-        _state.update {
-            it.copy(
-                dialogInfo = it.dialogInfo.copy(
-                    iconInfoList = updateSelectedIconByIndex(it.dialogInfo.iconInfoList, index)
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    dialogInfo = it.dialogInfo.copy(
+                        iconInfoList = updateSelectedIconByIndex(it.dialogInfo.iconInfoList, index)
+                    )
                 )
-            )
+            }
         }
     }
 
-    private fun updateSelectedIconByIndex(iconInfoList: List<IconInfo>, index: Int): List<IconInfo> {
+    private fun updateSelectedIconByIndex(
+        iconInfoList: List<IconInfo>, index: Int
+    ): List<IconInfo> {
         val finalList = iconInfoList.mapIndexed { loopIndex, iconInfo ->
             if (index == loopIndex) {
                 iconInfo.copy(isSelected = true)
@@ -116,13 +126,15 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onDialogAddList(listInfo: ListInfo) {
-        _state.update {
-            it.copy(
-                todoLists = addCreatedListInfo(listInfo),
-                dialogInfo = it.dialogInfo.copy(
-                    colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    todoLists = addCreatedListInfo(listInfo),
+                    dialogInfo = it.dialogInfo.copy(
+                        colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -133,23 +145,36 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onSortListsByNameClick() {
-        _state.update {
-            it.copy(
-                todoLists = sortListsBy(ListOrderTypes.NAME, it.todoLists)
-            )
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    todoLists = sortListsBy(ListOrderTypes.NAME, it.todoLists)
+                )
+            }
         }
     }
 
     fun onSortListsByCreationDate() {
-        _state.update {
-            it.copy(
-                todoLists = sortListsBy(ListOrderTypes.CREATION_DATE, it.todoLists)
-            )
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    todoLists = sortListsBy(ListOrderTypes.CREATION_DATE, it.todoLists)
+                )
+            }
         }
     }
 
     fun onDeleteAllLists() {
-        _state.update { it.copy(todoLists = listOf()) }
+        savableProcedure { _state.update { it.copy(todoLists = listOf()) } }
+    }
+
+    private fun savableProcedure(block: () -> Unit) {
+        block()
+        saveState()
+    }
+
+    private fun saveState() {
+
     }
 
     private fun sortListsBy(sortType: ListOrderTypes, todoLists: List<ListInfo>): List<ListInfo> =

@@ -2,6 +2,7 @@ package com.star.mytasks.customapp
 
 import android.app.Application
 import com.star.core.BuildConfig
+import com.star.core.di.appModule
 import com.star.core.log.CrashReportTree
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -23,5 +24,7 @@ class MyTasksApp : Application() {
     private fun getTimberTree(): Timber.Tree =
         if (BuildConfig.DEBUG) Timber.DebugTree() else CrashReportTree()
 
-    private val appModules: List<Module> = listOf()
+    private val appModules: List<Module> = listOf(
+        appModule
+    )
 }

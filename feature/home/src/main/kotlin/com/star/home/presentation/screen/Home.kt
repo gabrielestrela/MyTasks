@@ -28,7 +28,7 @@ fun Home(navController: NavHostController) {
     val homeState: HomeViewState by viewModel.state.collectAsStateWithLifecycle()
     BackHandler {
         val shouldGoBack =
-            navController.backQueue.first().destination.route.orEmpty() ==
+            navController.backQueue.first().destination.route.orEmpty() !=
                     NavigationDirection.Splash.route
 
         if (shouldGoBack) navController.navigateUp()
@@ -45,14 +45,7 @@ fun Home(navController: NavHostController) {
                 onDeleteAllListsClick = viewModel::onDeleteAllLists
             )
         },
-        bottomBar = {
-            HomeBottomBar(
-                onListAddClick = {
-                    viewModel.setDialogVisibility(true)
-                    viewModel.onAddListClick()
-                }
-            )
-        }
+        bottomBar = { HomeBottomBar(onListAddClick = { viewModel.setDialogVisibility(true) }) }
     ) { paddingValues ->
 
         AddListDialog(
