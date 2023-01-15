@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sort_tasks_button_description">Ordenar tarefas pelo nome</string>
+    <string name="sort_tasks_button_created_date_description">Ordenar tarefas pela data de criação</string>
+    <string name="delete_all_tasks_button_description">Deletar todas tarefas</string>
+</resources>

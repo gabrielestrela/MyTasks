@@ -1,0 +1,50 @@
+android {
+    compileSdk baseLibs.versions.compile.sdk.get() as Integer
+
+    defaultConfig {
+        minSdk baseLibs.versions.min.sdk.get() as Integer
+        targetSdk baseLibs.versions.compile.sdk.get() as Integer
+        versionCode baseLibs.versions.version.code.get() as Integer
+        versionName baseLibs.versions.version.name.get()
+
+        testInstrumentationRunner baseLibs.versions.test.instrumentation.runner.get()
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = baseLibs.versions.jvm.target.get()
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion baseLibs.versions.compose.version.get()
+    }
+    packagingOptions {
+        resources {
+            excludes += [
+                    '/META-INF/{AL2.0,LGPL2.1}',
+            ]
+        }
+    }
+}
+
+dependencies {
+    implementation (baseLibs.bundles.suite)
+    testImplementation (baseLibs.junit)
+    androidTestImplementation (baseLibs.bundles.android.test)
+    debugImplementation (baseLibs.compose.ui.tooling)
+    debugImplementation (baseLibs.compose.ui.test)
+}

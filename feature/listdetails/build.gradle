@@ -1,0 +1,12 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+apply from: "$rootDir/android_base.gradle"
+
+dependencies {
+    implementation (project(':core'))
+    implementation (project(':designsystem'))
+
+    implementation (baseLibs.bundles.koincompose)
+}

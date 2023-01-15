@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyTasks" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/green_500</item>
+    </style>
+
+    <style name="Theme.AnimatedSplashScreen" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/green_500</item>
+        <item name="android:windowBackground">@color/green_500</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/transparent</item>
+    </style>
+</resources>
