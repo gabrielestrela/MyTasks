@@ -12,13 +12,17 @@ compose_state_events_version = '1.2.3'
 constraint_layout_version = '1.0.1'
 glide_compose_version = '1.0.0-alpha.1'
 room_version = '2.5.0'
+moshi_version = '1.14.0'
+ksp_version = '1.6.10-1.0.4'
 
 jvm_target = '11'
 compile_sdk = '33'
 min_sdk = '31'
 version_code = '1'
 version_name = "1.0"
-test_instrumentation_runner = "androidx.test.runner.AndroidJunitRunner"
+test_instrumentation_runner = 'androidx.test.runner.AndroidJunitRunner'
+
+ksp_plugin = "com.google.devtools.ksp"
 
 [libraries]
 compose-ui-core = { group = 'androidx.compose.ui', name = 'ui', version.ref = 'compose_version' }
@@ -52,6 +56,10 @@ timber = { group = 'com.jakewharton.timber', name = 'timber', version.ref = 'tim
 
 room = { group = 'androidx.room', name = 'room-runtime', version.ref = 'room_version' }
 room_compiler = { group = 'androidx.room', name='room-compiler', version.ref = 'room_version' }
+
+moshi = { group = 'com.squareup.moshi', name = 'moshi', version.ref = 'moshi_version' }
+moshi_kotlin = { group = 'com.squareup.moshi' , name = 'moshi-kotlin', version.ref = 'moshi_version' }
+moshi_compiler = { group = 'com.squareup.moshi', name = 'moshi-kotlin-codegen' , version.ref = 'moshi_version' }
 
 junit = 'junit:junit:4.+'
 androidx-junit = 'androidx.test.ext:junit:1.1.3'

@@ -4,6 +4,7 @@ import android.app.Application
 import com.star.core.BuildConfig
 import com.star.core.di.appModule
 import com.star.core.log.CrashReportTree
+import com.star.core.moshi.di.moshiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -25,6 +26,7 @@ class MyTasksApp : Application() {
         if (BuildConfig.DEBUG) Timber.DebugTree() else CrashReportTree()
 
     private val appModules: List<Module> = listOf(
-        appModule
+        appModule,
+        moshiModule
     )
 }
