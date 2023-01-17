@@ -7,7 +7,6 @@ apply from: "$rootDir/android_base.gradle"
 
 dependencies {
     implementation (baseLibs.bundles.koincomplete)
-
     implementation (baseLibs.moshi)
     implementation (baseLibs.moshi.kotlin)
     ksp (baseLibs.moshi.compiler)
