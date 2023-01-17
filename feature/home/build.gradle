@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp' version '1.7.10-1.0.6'
+    id 'kotlin-kapt'
 }
 apply from: "$rootDir/android_base.gradle"
 
@@ -8,7 +10,12 @@ dependencies {
     implementation (project(':core'))
     implementation (project(':designsystem'))
 
-    implementation (baseLibs.bundles.koincompose)
+    implementation (baseLibs.room)
+    kapt (baseLibs.room.compiler)
+    implementation (baseLibs.moshi)
+    implementation (baseLibs.moshi.kotlin)
+    ksp (baseLibs.moshi.compiler)
+    implementation (baseLibs.bundles.koincomplete)
     implementation (baseLibs.androidx.constraintlayout)
     implementation (baseLibs.glide.compose)
 }

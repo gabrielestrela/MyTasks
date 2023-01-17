@@ -8,6 +8,8 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.soloader.SoLoader
 import com.star.core.BuildConfig
+import com.star.core.coroutines.di.coroutineCoreModule
+import com.star.core.di.appModule
 import com.star.core.log.CrashReportTree
 import com.star.core.moshi.di.moshiModule
 import org.koin.android.ext.koin.androidContext
@@ -49,6 +51,8 @@ class MyTasksApp : Application() {
     }
 
     private val appModules: List<Module> = listOf(
-        moshiModule
+        appModule,
+        moshiModule,
+        coroutineCoreModule
     )
 }

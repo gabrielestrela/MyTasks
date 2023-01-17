@@ -17,9 +17,9 @@ data class HomeViewState(
 )
 
 data class UserInfo(
-    val name: String = String.empty(),
-    val email: String = String.empty(),
-    val pictureUrl: String = String.empty()
+    val name: String = "DbTest",
+    val email: String = "DbTest@dbtest.com",
+    val pictureUrl: String = "bla"
 )
 
 data class DialogInfo(

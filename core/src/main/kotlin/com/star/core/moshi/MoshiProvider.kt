@@ -6,6 +6,9 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 class MoshiProvider : MoshiHandler {
     private var moshi: Moshi
+    private val defaultFactories = listOf(
+        KotlinJsonAdapterFactory()
+    )
 
     init {
         moshi = getDefaultInstance()
@@ -32,8 +35,4 @@ class MoshiProvider : MoshiHandler {
 
         return newBuilder.build()
     }
-
-    private val defaultFactories = listOf(
-        KotlinJsonAdapterFactory()
-    )
 }

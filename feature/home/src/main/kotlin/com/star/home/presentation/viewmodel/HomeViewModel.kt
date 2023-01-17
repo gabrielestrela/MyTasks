@@ -1,44 +1,47 @@
 package com.star.home.presentation.viewmodel
 
-import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
-import com.star.home.domain.model.ListOrderTypes
-import com.star.home.presentation.event.HomeEvents
+import androidx.lifecycle.viewModelScope
+import com.star.core.coroutines.CoroutineDispatcherProvider
+import com.star.home.domain.usecase.GetHomeStateUseCase
+import com.star.home.presentation.model.ListOrderTypes
+import com.star.home.domain.usecase.SaveHomeStateUseCase
 import com.star.home.presentation.viewstate.*
-import de.palm.composestateevents.consumed
-import de.palm.composestateevents.triggered
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val saveHomeState: SaveHomeStateUseCase,
+    private val getHomeState: GetHomeStateUseCase,
+    private val dispatcher: CoroutineDispatcherProvider,
+) : ViewModel() {
     private val _state: MutableStateFlow<HomeViewState> = MutableStateFlow(HomeViewState())
     val state = _state.asStateFlow()
 
     init {
-        _state.update {
-            it.copy(userInfo = UserInfo(
-                name = "Gabriel Estrela",
-                email = "gabriel.estrela@email.com",
-                pictureUrl = PROFILE_URL
-            ))
+        savableProcedure {
+            viewModelScope.launch(dispatcher.io()) {
+                with(getHomeState()) {
+                    this?.let {
+                        _state.update {
+                            it.copy(
+                                userInfo = this.userInfo,
+                                isLoading = this.isLoading,
+                                todoLists = this.todoLists,
+                            )
+                        }
+                    }
+                }
+            }
         }
-    }
-
-    private val _event: MutableStateFlow<HomeEvents> = MutableStateFlow(HomeEvents())
-    val event = _event.asStateFlow()
-
-    fun onAddListClick() {
-        _event.update { it.copy(showCreateListDialog = triggered) }
-    }
-
-    fun onAddListClickComplete() {
-        _event.update { it.copy(showCreateListDialog = consumed) }
     }
 
     fun setDialogVisibility(shouldDisplay: Boolean) {
         _state.update {
-            it.copy(dialogInfo = it.dialogInfo.copy(shouldDisplayDialog = shouldDisplay)) }
+            it.copy(dialogInfo = it.dialogInfo.copy(shouldDisplayDialog = shouldDisplay))
+        }
     }
 
     fun updateSelectedColorInfo(index: Int) {
@@ -105,7 +108,9 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    private fun updateSelectedIconByIndex(iconInfoList: List<IconInfo>, index: Int): List<IconInfo> {
+    private fun updateSelectedIconByIndex(
+        iconInfoList: List<IconInfo>, index: Int
+    ): List<IconInfo> {
         val finalList = iconInfoList.mapIndexed { loopIndex, iconInfo ->
             if (index == loopIndex) {
                 iconInfo.copy(isSelected = true)
@@ -116,13 +121,15 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onDialogAddList(listInfo: ListInfo) {
-        _state.update {
-            it.copy(
-                todoLists = addCreatedListInfo(listInfo),
-                dialogInfo = it.dialogInfo.copy(
-                    colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    todoLists = addCreatedListInfo(listInfo),
+                    dialogInfo = it.dialogInfo.copy(
+                        colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -133,23 +140,38 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onSortListsByNameClick() {
-        _state.update {
-            it.copy(
-                todoLists = sortListsBy(ListOrderTypes.NAME, it.todoLists)
-            )
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    todoLists = sortListsBy(ListOrderTypes.NAME, it.todoLists)
+                )
+            }
         }
     }
 
     fun onSortListsByCreationDate() {
-        _state.update {
-            it.copy(
-                todoLists = sortListsBy(ListOrderTypes.CREATION_DATE, it.todoLists)
-            )
+        savableProcedure {
+            _state.update {
+                it.copy(
+                    todoLists = sortListsBy(ListOrderTypes.CREATION_DATE, it.todoLists)
+                )
+            }
         }
     }
 
     fun onDeleteAllLists() {
-        _state.update { it.copy(todoLists = listOf()) }
+        savableProcedure { _state.update { it.copy(todoLists = listOf()) } }
+    }
+
+    private fun savableProcedure(block: () -> Unit) {
+        block()
+        viewModelScope.launch(dispatcher.io()) {
+            saveState()
+        }
+    }
+
+    private fun saveState() {
+        saveHomeState(_state.value)
     }
 
     private fun sortListsBy(sortType: ListOrderTypes, todoLists: List<ListInfo>): List<ListInfo> =
