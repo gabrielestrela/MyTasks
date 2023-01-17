@@ -19,7 +19,6 @@ import com.star.designsystem.spacer.SimpleSpacer
 import com.star.designsystem.theme.Gray600
 import com.star.designsystem.theme.Gray700
 import com.star.designsystem.theme.Green250
-import com.star.home.domain.model.ListData
 import com.star.home.presentation.viewstate.ListInfo
 
 @Composable

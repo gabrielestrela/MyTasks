@@ -1,7 +1,8 @@
 package com.star.home.data.datasource
 
-import com.star.home.presentation.viewstate.ListInfo
+import com.star.home.domain.model.HomeData
 
 interface HomeDataSource {
-    fun saveHomeData(lists: List<ListInfo>)
+    fun saveHomeData(homeData: HomeData)
+    fun getHomeData(): HomeData?
 }

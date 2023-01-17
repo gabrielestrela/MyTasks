@@ -1,79 +1,76 @@
 package com.star.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.star.home.domain.model.ListOrderTypes
+import androidx.lifecycle.viewModelScope
+import com.star.core.coroutines.CoroutineDispatcherProvider
+import com.star.home.domain.usecase.GetHomeStateUseCase
+import com.star.home.presentation.model.ListOrderTypes
 import com.star.home.domain.usecase.SaveHomeStateUseCase
-import com.star.home.presentation.event.HomeEvents
 import com.star.home.presentation.viewstate.*
-import de.palm.composestateevents.triggered
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    val saveHomeState: SaveHomeStateUseCase
+    private val saveHomeState: SaveHomeStateUseCase,
+    private val getHomeState: GetHomeStateUseCase,
+    private val dispatcher: CoroutineDispatcherProvider,
 ) : ViewModel() {
     private val _state: MutableStateFlow<HomeViewState> = MutableStateFlow(HomeViewState())
     val state = _state.asStateFlow()
 
     init {
-        _state.update {
-            it.copy(userInfo = UserInfo(
-                name = "Gabriel Estrela",
-                email = "gabriel.estrela@email.com",
-                pictureUrl = PROFILE_URL
-            ))
+        savableProcedure {
+            viewModelScope.launch(dispatcher.io()) {
+                with(getHomeState()) {
+                    this?.let {
+                        _state.update {
+                            it.copy(
+                                userInfo = this.userInfo,
+                                isLoading = this.isLoading,
+                                todoLists = this.todoLists,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private val _event: MutableStateFlow<HomeEvents> = MutableStateFlow(HomeEvents())
-    val event = _event.asStateFlow()
-
-    fun onAddListClick() {
-        _event.update { it.copy(showCreateListDialog = triggered) }
-    }
-
     fun setDialogVisibility(shouldDisplay: Boolean) {
-        savableProcedure {
-            _state.update {
-                it.copy(dialogInfo = it.dialogInfo.copy(shouldDisplayDialog = shouldDisplay))
-            }
+        _state.update {
+            it.copy(dialogInfo = it.dialogInfo.copy(shouldDisplayDialog = shouldDisplay))
         }
     }
 
     fun updateSelectedColorInfo(index: Int) {
-        savableProcedure {
-            _state.update {
-                it.copy(
-                    dialogInfo = it.dialogInfo.copy(
-                        colorInfoList = updateSelectedColor(it.dialogInfo.colorInfoList, index)
-                    )
+        _state.update {
+            it.copy(
+                dialogInfo = it.dialogInfo.copy(
+                    colorInfoList = updateSelectedColor(it.dialogInfo.colorInfoList, index)
                 )
-            }
+            )
         }
     }
 
     fun resetSelectedColor() {
-        savableProcedure {
-            _state.update {
-                it.copy(
-                    dialogInfo = it.dialogInfo.copy(
-                        colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
-                    )
+        _state.update {
+            it.copy(
+                dialogInfo = it.dialogInfo.copy(
+                    colorInfoList = resetAnySelectedColor(it.dialogInfo.colorInfoList)
                 )
-            }
+            )
         }
     }
 
     fun resetSelectedIconList() {
-        savableProcedure {
-            _state.update {
-                it.copy(
-                    dialogInfo = it.dialogInfo.copy(
-                        iconInfoList = resetIconInfoList(it.dialogInfo.iconInfoList)
-                    )
+        _state.update {
+            it.copy(
+                dialogInfo = it.dialogInfo.copy(
+                    iconInfoList = resetIconInfoList(it.dialogInfo.iconInfoList)
                 )
-            }
+            )
         }
     }
 
@@ -102,14 +99,12 @@ class HomeViewModel(
     }
 
     fun updateSelectedIconInfo(index: Int) {
-        savableProcedure {
-            _state.update {
-                it.copy(
-                    dialogInfo = it.dialogInfo.copy(
-                        iconInfoList = updateSelectedIconByIndex(it.dialogInfo.iconInfoList, index)
-                    )
+        _state.update {
+            it.copy(
+                dialogInfo = it.dialogInfo.copy(
+                    iconInfoList = updateSelectedIconByIndex(it.dialogInfo.iconInfoList, index)
                 )
-            }
+            )
         }
     }
 
@@ -170,11 +165,13 @@ class HomeViewModel(
 
     private fun savableProcedure(block: () -> Unit) {
         block()
-        saveState()
+        viewModelScope.launch(dispatcher.io()) {
+            saveState()
+        }
     }
 
     private fun saveState() {
-
+        saveHomeState(_state.value)
     }
 
     private fun sortListsBy(sortType: ListOrderTypes, todoLists: List<ListInfo>): List<ListInfo> =

@@ -2,6 +2,7 @@ package com.star.mytasks.customapp
 
 import android.app.Application
 import com.star.core.BuildConfig
+import com.star.core.coroutines.di.coroutineCoreModule
 import com.star.core.di.appModule
 import com.star.core.log.CrashReportTree
 import com.star.core.moshi.di.moshiModule
@@ -27,6 +28,7 @@ class MyTasksApp : Application() {
 
     private val appModules: List<Module> = listOf(
         appModule,
-        moshiModule
+        moshiModule,
+        coroutineCoreModule
     )
 }

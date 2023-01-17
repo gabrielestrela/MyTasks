@@ -1,4 +1,4 @@
-package com.star.home.domain.model
+package com.star.home.presentation.model
 
 enum class ListOrderTypes {
     NAME,

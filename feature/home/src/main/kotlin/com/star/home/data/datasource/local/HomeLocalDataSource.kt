@@ -2,18 +2,22 @@ package com.star.home.data.datasource.local
 
 import android.content.SharedPreferences
 import com.star.home.data.datasource.HomeDataSource
-import com.star.home.presentation.viewstate.ListInfo
+import com.star.home.domain.mapper.DomainToEntityMapper
+import com.star.home.domain.mapper.EntityToDomainMapper
+import com.star.home.domain.model.HomeData
 
 class HomeLocalDataSource(
-    val preferences: SharedPreferences
+    private val roomDao: HomeDao,
+    private val domainToEntityMapper: DomainToEntityMapper,
+    private val entityToDomainMapper: EntityToDomainMapper
 ): HomeDataSource {
 
-    override fun saveHomeData(lists: List<ListInfo>) {
-        preferences.edit().putString(
-            LISTS_KEY,
-            lists.joinToString(separator = SEPARATOR)
-        ).apply()
+    override fun saveHomeData(homeData: HomeData) {
+        roomDao.saveHomeData(domainToEntityMapper.mapFrom(homeData))
     }
+
+    override fun getHomeData(): HomeData? =
+        entityToDomainMapper.mapFrom(roomDao.getHomeData())
 
     companion object {
         private const val SEPARATOR = "|_|_|"
