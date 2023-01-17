@@ -62,6 +62,8 @@ dependencies {
     implementation (baseLibs.lottie.compose)
     implementation (baseLibs.bundles.suite)
     implementation (baseLibs.bundles.koincompose)
+    implementation (baseLibs.bundles.flipper)
+
     testImplementation (baseLibs.junit)
     androidTestImplementation (baseLibs.bundles.android.test)
     debugImplementation (baseLibs.compose.ui.tooling)
